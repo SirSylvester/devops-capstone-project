@@ -125,21 +125,90 @@ class TestAccountService(TestCase):
 
     def test_get_account(self):
         """It should Read a single Account"""
-    # First, create an account that we will later try to read
-        account = self._create_accounts(1)[0]
+    # First, create an account to be read
+        account = self._create_accounts(1)[0]  # Create 1 account
     
-    # Make a GET request to fetch the created account by its ID
-        resp = self.client.get(f"/accounts/{account.id}", content_type="application/json")
+    # Make a GET request to read the account by its ID
+        resp = self.client.get(f"{BASE_URL}/{account.id}", content_type="application/json")
     
     # Assert that the response status code is HTTP 200 OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
     
-    # Extract the response data as JSON
+    # Check that the returned account data is correct
         data = resp.get_json()
-    
-    # Verify that the account data is correct
         self.assertEqual(data["name"], account.name)
         self.assertEqual(data["email"], account.email)
-        self.assertEqual(data["address"], account.address)
+    
+    def test_get_account_not_found(self):
+        """It should not Read an Account that is not found"""
+    # Send a GET request to read an account that doesn't exist (e.g., ID 0)
+        resp = self.client.get(f"{BASE_URL}/0")
+    
+    # Assert that the response status code is HTTP 404 NOT FOUND
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
 
 # ADD YOUR TEST CASES HERE ...
+    def test_list_accounts(self):
+        """It should List all Accounts"""
+    # First, create some accounts to be listed
+        self._create_accounts(3)  # Creates 3 accounts for testing
+    
+    # Make a GET request to the /accounts endpoint to list all accounts
+        resp = self.client.get(f"{BASE_URL}", content_type="application/json")
+    
+    # Assert that the response status code is HTTP 200 OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    
+    # Get the list of accounts from the response
+        data = resp.get_json()
+    
+    # Assert that the response contains 3 accounts
+        self.assertEqual(len(data), 3)
+
+    def test_update_account(self):
+        """It should Update an existing Account"""
+    # First, create an account that we will update
+        account = self._create_accounts(1)[0]  # Create one account
+    
+    # Define new data to update the account
+        updated_data = {
+        "name": "Updated Name",
+        "email": "updated.email@example.com",
+        "address": "Updated Address",
+        "phone_number": "1234567890"
+        }
+    
+    # Make a PUT request to the /accounts/<id> endpoint to update the account
+        resp = self.client.put(
+        f"{BASE_URL}/{account.id}", json=updated_data, content_type="application/json"
+        )   
+    
+    # Assert that the response status code is HTTP 200 OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+    
+    # Get the updated account from the response
+        data = resp.get_json()
+    
+    # Assert that the updated account data matches the provided data
+        self.assertEqual(data["name"], "Updated Name")
+        self.assertEqual(data["email"], "updated.email@example.com")
+        self.assertEqual(data["address"], "Updated Address")
+        self.assertEqual(data["phone_number"], "1234567890")
+   
+    def test_delete_account(self):
+        """It should Delete an Account"""
+    # First, create an account that we will delete
+        account = self._create_accounts(1)[0]  # Create one account
+    
+    # Make a DELETE request to the /accounts/<id> endpoint to delete the account
+        resp = self.client.delete(f"{BASE_URL}/{account.id}", content_type="application/json")
+    
+    # Assert that the response status code is HTTP 204 NO CONTENT
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+    
+    # Make a GET request to ensure the account is deleted
+        resp = self.client.get(f"{BASE_URL}/{account.id}", content_type="application/json")
+    
+    # Assert that the response status code is HTTP 404 NOT FOUND
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

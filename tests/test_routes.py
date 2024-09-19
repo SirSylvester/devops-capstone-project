@@ -136,7 +136,7 @@ class TestAccountService(TestCase):
         data = resp.get_json()
         self.assertEqual(data["name"], account.name)
         self.assertEqual(data["email"], account.email)
-    
+
     def test_get_account_not_found(self):
         """It should not Read an Account that is not found"""
     # Send a GET request to read an account that doesn't exist (e.g., ID 0)

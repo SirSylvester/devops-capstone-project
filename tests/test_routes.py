@@ -1,10 +1,7 @@
-"""
-Account API Service Test Suite
-
+"""Account API Service Test Suite
 Test cases can be run with the following:
   nosetests -v --with-spec --spec-color
-  coverage report -m
-"""
+  coverage report -m"""
 import os
 import logging
 from unittest import TestCase
@@ -14,15 +11,12 @@ from service.models import db, Account, init_db
 from service.routes import app
 from service import talisman
 
-
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
 BASE_URL = "/accounts"
 HTTPS_ENVIRON = {'wsgi.url_scheme': 'https'}
-
-
 
 ######################################################################
 #  T E S T   C A S E S

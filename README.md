@@ -5,6 +5,10 @@
 
 This repository contains the starter code for the project in [**IBM-CD0285EN-SkillsNetwork DevOps Capstone Project**](https://www.coursera.org/learn/devops-capstone-project?specialization=devops-and-software-engineering) which is part of the [**IBM DevOps and Software Engineering Professional Certificate**](https://www.coursera.org/professional-certificates/devops-and-software-engineering)
 
+# DevOps Capstone Project
+
+![Build Status](https://github.com/SirSylvester/devops-capstone-project/actions/workflows/ci-build.yaml/badge.svg)
+
 ## Usage
 
 You should use this template to start your DevOps Capstone project. It contains all of the code that you will need to get started.
@@ -131,3 +135,6 @@ You can now perform Tekton development locally, just like in the Cloud IDE lab e
 Licensed under the Apache License. See [LICENSE](LICENSE)
 
 ## <h3 align="center"> © IBM Corporation 2022. All rights reserved. <h3/>
+
+
+

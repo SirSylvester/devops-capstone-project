@@ -15,7 +15,7 @@ spec:
     - name: repo-url
     - name: branch
       default: main
-    - name: build
+    - name: build-image 
   tasks:
     - name: init
       workspaces:
@@ -36,7 +36,6 @@ spec:
         value: $(params.branch)
       runAfter:
         - init
-
     - name: lint
       workspaces:
         - name: source
@@ -46,20 +45,10 @@ spec:
       params:
       - name: image
         value: "python:3.9-slim"
-        script: |
-          #!/bin/bash
-          set -e
-          echo "***** Updating pip *****"
-          python -m pip install --upgrade pip wheel
-          echo "***** Installing flake8 *****"
-          pip install flake8
-          echo "***** Running flake8 *****"
-          flake8 --count --max-complexity=10 --max-line-length=127 --statistics
       - name: args
         value: ["--count", "--max-complexity=10", "--max-line-length=127", "--statistics"]
       runAfter:
         - clone
-
     - name: tests
       workspaces:
         - name: source
@@ -86,3 +75,21 @@ spec:
       runAfter:
         - tests
         - lint
+    - name: deploy
+      workspaces:
+        - name: manifest-dir
+          workspace: pipeline-workspace
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      params:
+      - name: SCRIPT
+        value: |
+          echo "Updating manifest..."
+          sed -i "s|IMAGE_NAME_HERE|$(params.build-image)|g" deploy/deployment.yaml
+          cat deploy/deployment.yaml
+          echo "Deploying to OpenShift..."
+          oc apply -f deploy/
+          oc get pods -l app=accounts
+      runAfter:
+        - build

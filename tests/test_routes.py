@@ -144,8 +144,6 @@ class TestAccountService(TestCase):
     # Assert that the response status code is HTTP 404 NOT FOUND
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-
-# ADD YOUR TEST CASES HERE ...
     def test_get_account_list(self):
         """It should Get a list of Accounts"""
         # Create 5 accounts for the test

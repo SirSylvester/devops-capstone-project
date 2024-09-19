@@ -63,19 +63,15 @@ def create_accounts():
 
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
-    """List all accounts"""
-    app.logger.info("Request to list all accounts")
-    
-    # Get all accounts from the database
-    accounts = Account.all()
-    
-    # Serialize each account into a list of JSON objects
-    results = [account.serialize() for account in accounts]
-    
-    # Return the list with a 200 OK status
-    return jsonify(results), status.HTTP_200_OK
-
-
+    """
+    List all Accounts
+    This endpoint will list all Accounts
+    """
+    app.logger.info("Request to list Accounts")
+    accounts = Account.all()  # Fetch all accounts from the database
+    account_list = [account.serialize() for account in accounts]  # Serialize accounts
+    app.logger.info("Returning [%s] accounts", len(account_list))
+    return jsonify(account_list), status.HTTP_200_OK
 
 ######################################################################
 # READ AN ACCOUNT
@@ -106,23 +102,18 @@ def get_accounts(account_id):
 ######################################################################
 
 @app.route("/accounts/<int:account_id>", methods=["PUT"])
-def update_account(account_id):
-    """Update an account"""
-    app.logger.info(f"Request to update account with id: {account_id}")
-    
-    # Find the account by its ID
+def update_accounts(account_id):
+    """
+    Update an Account
+    This endpoint will update an Account based on the posted data
+    """
+    app.logger.info("Request to update an Account with id: %s", account_id)
     account = Account.find(account_id)
-    
-    # If the account is not found, return a 404 error
     if not account:
-        return jsonify({"error": "Account not found"}), status.HTTP_404_NOT_FOUND
-    
-    # Deserialize the data from the request and update the account
-    account.deserialize(request.get_json())
-    account.update()
-    
-    # Return the updated account data
-    return jsonify(account.serialize()), status.HTTP_200_OK
+        abort(status.HTTP_404_NOT_FOUND, f"Account with id [{account_id}] could not be found.")
+    account.deserialize(request.get_json())  # Deserialize the updated data
+    account.update()  # Save changes to the database
+    return account.serialize(), status.HTTP_200_OK
 
 
 
@@ -130,21 +121,21 @@ def update_account(account_id):
 # DELETE AN ACCOUNT
 ######################################################################
 
-@app.route("/accounts/<int:account_id>", methods=["DELETE"])
-def delete_account(account_id):
-    """Delete an account"""
-    app.logger.info(f"Request to delete account with id: {account_id}")
-    
-    # Find the account by its ID
-    account = Account.find(account_id)
-    
-    # If the account is found, delete it
-    if account:
-        account.delete()
-    
-    # Return a 204 No Content status
-    return "", status.HTTP_204_NO_CONTENT
+######################################################################
+# DELETE AN ACCOUNT
+######################################################################
 
+@app.route("/accounts/<int:account_id>", methods=["DELETE"])
+def delete_accounts(account_id):
+    """
+    Delete an Account
+    This endpoint will delete an Account based on the account_id that is requested
+    """
+    app.logger.info("Request to delete an Account with id: %s", account_id)
+    account = Account.find(account_id)
+    if account:
+        account.delete()  # If the account exists, delete it
+    return "", status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
